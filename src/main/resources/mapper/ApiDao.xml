@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kd.mysql.ApiDao">
+
+    <select id="getTime" resultType="String">
+        SELECT NOW()
+    </select>
+
+    <insert id="setBoard">
+      INSERT INTO fm_board (board_no, url)
+      VALUES (#{boardNo}, #{url})
+    </insert>
+
+    <update id="saveContent">
+      update fm_board
+      set content = #{content}
+      WHERE id = #{id}
+    </update>
+
+    <select id="getFmBoards" resultType="kd.mysql.domain.FmBoard">
+        SELECT
+            *
+        FROM
+            fm_board
+    </select>
+
+
+
+
+</mapper>
