@@ -29,7 +29,7 @@ public class ApiController {
     }
 
     @GetMapping(path = "/fmGetListDetail")
-    public String fmGetListDetail() throws IOException {
+    public String fmGetListDetail() throws IOException, InterruptedException {
 
         fmCrowling.getFmListDetail();
 
@@ -37,7 +37,13 @@ public class ApiController {
     }
 
 
+    @GetMapping(path = "/test")
+    public String test() throws IOException, InterruptedException {
 
+        fmCrowling.getTest();
+
+        return String.format("%s %s", apiDao.selectName(), LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+    }
 
 
 }

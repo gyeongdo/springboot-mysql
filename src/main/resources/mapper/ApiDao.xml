@@ -14,7 +14,8 @@
 
     <update id="saveContent">
       update fm_board
-      set content = #{content}
+      set content = #{content},
+          title = #{title}
       WHERE id = #{id}
     </update>
 

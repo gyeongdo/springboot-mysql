@@ -93,20 +93,17 @@ public class FmCrowling {
 
     }
 
-    public void getFmListDetail() throws IOException {
+    public void getFmListDetail() throws IOException, InterruptedException {
 
         List<FmBoard> fmBoards = apiDao.fmBoards();
-//        for(FmBoard fmBoard : fmBoards){
-//            pagingCrowlingDetail(fmBoard);
-//        }
-        for(int i=0; i<fmBoards.size(); i++){
+
+        for(int i=403; i<800; i++){
             if( fmBoards.get(i).getContent() == null ){
 //                if( !fmBoards.get(i).getContent().equals("") || fmBoards.get(i).getContent() != null ){
-                pagingCrowlingDetail(fmBoards.get(i));
+                    Thread.sleep(40000);
+                    pagingCrowlingDetail(fmBoards.get(i));
 //                }
             }
-
-
         }
     }
 
@@ -114,40 +111,67 @@ public class FmCrowling {
 
         Document doc = null;
         HashMap<String, String> headers = new HashMap();
-        Connection.Response response = Jsoup.connect(fmBoard.getUrl())
+
+        if( !fmBoard.getUrl().equals("") ){
+//            System.setProperty("http.proxyHost", "125.141.219.117");
+//            System.setProperty("http.proxyPort", "80");
+            Connection.Response response = Jsoup.connect(fmBoard.getUrl())
+                    .headers(headers)
+                    .timeout(200000)
+                    .execute();
+
+            if (response.statusCode() == 200) {
+                doc = response.parse();
+            }
+
+            // 총 페이지 읽어오기
+            String tr = doc.select("div.xe_content").toString();
+            String title = doc.select("span.np_18px_span").text();
+            LocalDateTime now = LocalDateTime.now();
+            fmBoard.setContent(tr);
+            fmBoard.setTitle(title);
+            fmBoard.setCreatedDate(now);
+            apiDao.saveContent(fmBoard);
+
+
+            doc = null;
+            headers = null;
+            response = null;
+        }
+    }
+
+
+    public void getTest() throws IOException, InterruptedException {
+
+        Document doc = null;
+        HashMap<String, String> headers = new HashMap();
+
+
+        Connection.Response response = Jsoup.connect("https://www.fmkorea.com/index.php?mid=best&listStyle=webzine&document_srl=2380553204&search_keyword=%EB%AC%B4%ED%95%9C%EB%8F%84%EC%A0%84&search_target=title&page=3#comment_")
                 .headers(headers)
-                .timeout(20000)
+                .timeout(200000)
                 .execute();
 
         if (response.statusCode() == 200) {
             doc = response.parse();
         }
+        FmBoard fmBoard = new FmBoard();
 
-        // 총 페이지 읽어오기
         String tr = doc.select("div.xe_content").toString();
+        String title = doc.select("span.np_18px_span").text();
+
         LocalDateTime now = LocalDateTime.now();
         fmBoard.setContent(tr);
-        fmBoard.setCreatedDate(now);
+        fmBoard.setTitle(title);
+
         apiDao.saveContent(fmBoard);
 
-//        long no = 1;
-//        for( Element td : tr.select("li")){
-//            FmBoard fmBoard = new FmBoard();
-//            if(!td.select("div a").attr("href").equals("") ){
-//                fmBoard.setUrl(("https://www.fmkorea.com" + td.select("div a").attr("href")));
-//                fmBoard.setBoardNo(no);
-//                no++;
-//                apiDao.save(fmBoard);
-//            }
-//        }
 
         doc = null;
         headers = null;
         response = null;
 
     }
-
-
 
 
 }
